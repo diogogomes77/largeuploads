@@ -16,4 +16,5 @@ public interface StorageService {
     Resource loadAsResource(String filename);
 
     void store_stream(InputStream fileStream, String name);
+
 }

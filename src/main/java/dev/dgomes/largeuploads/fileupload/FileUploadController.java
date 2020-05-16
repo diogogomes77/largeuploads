@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -78,36 +79,29 @@ public class FileUploadController {
         InputStream fileStream = null;
         String name = null;
         try {
-            // retrieve the multi-part constituent items parsed from the request
             iter = upload.getItemIterator(request);
-
-            // loop through each item
             while (iter.hasNext()) {
                 FileItemStream item = iter.next();
                 name = item.getName();
                 fileStream = item.openStream();
-                // check if the item is a file
+
                 if (!item.isFormField()) {
                     System.out.println("File field " + name + " with file name " + item.getName() + " detected.");
-                    break; // break here so that the input stream can be processed
+                    break;
                 }
             }
         } catch (FileUploadException | IOException e) {
-            // log / handle the error here as necessary
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("message", name + " upload error!");
             return "redirect:/";
         }
-
         if (fileStream != null) {
             System.out.println("fileStream = " + fileStream.toString());
-            // a file has been sent in the http request
-            // pass the fileStream to a method on the storageService so it can be persisted
-            // note the storageService will need to be modified to receive and process the fileStream
             storageService.store_stream(fileStream, name);
         }
         redirectAttributes.addFlashAttribute("message", name + " uploaded successfully!");
         return "redirect:/";
     }
+
 
 }
