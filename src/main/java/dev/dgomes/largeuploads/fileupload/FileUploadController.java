@@ -48,17 +48,6 @@ public class FileUploadController {
         ).collect(Collectors.toList());
 
         model.addAttribute("files", fileInfos);
-        /*
-        model.addAttribute("files", storageService.loadAll()
-                .map(path -> MvcUriComponentsBuilder
-                        .fromMethodName(FileUploadController.class,"serveFile",path
-                                .getFileName()
-                                .toString())
-                        .build()
-                        .toUri()
-                        .toString())
-                .collect(Collectors.toList()));
-         */
         return "uploadForm";
     }
 
