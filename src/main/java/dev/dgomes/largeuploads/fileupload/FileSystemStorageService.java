@@ -95,12 +95,6 @@ public class FileSystemStorageService implements StorageService {
 	public void store_stream(InputStream fileStream, String name) {
 		String filename = name;
 		try {
-			if (filename.contains("..")) {
-				// This is a security check
-				throw new StorageException(
-						"Cannot store file with relative path outside current directory "
-								+ filename);
-			}
 			try (InputStream inputStream = fileStream) {
 				Files.copy(inputStream, this.rootLocation.resolve(filename),
 						StandardCopyOption.REPLACE_EXISTING);

@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -32,6 +33,22 @@ public class FileUploadController {
     @GetMapping("/")
     public String listUploadedFiles(Model model) throws IOException {
 
+        List<FileInfo> fileInfos = storageService.loadAll().map(
+                path -> {
+                    String filename = path.getFileName().toString();
+                    String url = MvcUriComponentsBuilder
+                            .fromMethodName(FileUploadController.class,"serveFile",path
+                                    .getFileName()
+                                    .toString())
+                            .build()
+                            .toUri()
+                            .toString();
+                    return new FileInfo(filename, url);
+                }
+        ).collect(Collectors.toList());
+
+        model.addAttribute("files", fileInfos);
+        /*
         model.addAttribute("files", storageService.loadAll()
                 .map(path -> MvcUriComponentsBuilder
                         .fromMethodName(FileUploadController.class,"serveFile",path
@@ -41,6 +58,7 @@ public class FileUploadController {
                         .toUri()
                         .toString())
                 .collect(Collectors.toList()));
+         */
         return "uploadForm";
     }
 
@@ -75,13 +93,10 @@ public class FileUploadController {
             iter = upload.getItemIterator(request);
 
             // loop through each item
-            int i = 0;
             while (iter.hasNext()) {
                 FileItemStream item = iter.next();
                 name = item.getName();
                 fileStream = item.openStream();
-                System.out.println("item " + i + "= " + item.toString());
-
                 // check if the item is a file
                 if (!item.isFormField()) {
                     System.out.println("File field " + name + " with file name " + item.getName() + " detected.");
@@ -91,17 +106,18 @@ public class FileUploadController {
         } catch (FileUploadException | IOException e) {
             // log / handle the error here as necessary
             e.printStackTrace();
+            redirectAttributes.addFlashAttribute("message", name + " upload error!");
+            return "redirect:/";
         }
 
         if (fileStream != null) {
+            System.out.println("fileStream = " + fileStream.toString());
             // a file has been sent in the http request
             // pass the fileStream to a method on the storageService so it can be persisted
             // note the storageService will need to be modified to receive and process the fileStream
             storageService.store_stream(fileStream, name);
         }
-
-        redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + name + "!");
-
+        redirectAttributes.addFlashAttribute("message", name + " uploaded successfully!");
         return "redirect:/";
     }
 
