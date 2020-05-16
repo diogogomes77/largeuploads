@@ -32,11 +32,15 @@ public class FileUploadController {
     @GetMapping("/")
     public String listUploadedFiles(Model model) throws IOException {
 
-        model.addAttribute("files", storageService.loadAll().map(
-                path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-                        "serveFile", path.getFileName().toString()).build().toUri().toString())
+        model.addAttribute("files", storageService.loadAll()
+                .map(path -> MvcUriComponentsBuilder
+                        .fromMethodName(FileUploadController.class,"serveFile",path
+                                .getFileName()
+                                .toString())
+                        .build()
+                        .toUri()
+                        .toString())
                 .collect(Collectors.toList()));
-
         return "uploadForm";
     }
 
@@ -45,8 +49,10 @@ public class FileUploadController {
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
 
         Resource file = storageService.loadAsResource(filename);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + file.getFilename() + "\"")
+                .body(file);
     }
 
     @PostMapping("/")
@@ -55,7 +61,7 @@ public class FileUploadController {
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
 
         if (!isMultipart) {
-            // consider raising an error here if desired
+            throw new StorageException("File not Multipart as expected!");
         }
 
         // Create a new file upload handler
@@ -69,10 +75,12 @@ public class FileUploadController {
             iter = upload.getItemIterator(request);
 
             // loop through each item
+            int i = 0;
             while (iter.hasNext()) {
                 FileItemStream item = iter.next();
                 name = item.getName();
                 fileStream = item.openStream();
+                System.out.println("item " + i + "= " + item.toString());
 
                 // check if the item is a file
                 if (!item.isFormField()) {
@@ -95,11 +103,6 @@ public class FileUploadController {
         redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + name + "!");
 
         return "redirect:/";
-    }
-
-    @ExceptionHandler(StorageFileNotFoundException.class)
-    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-        return ResponseEntity.notFound().build();
     }
 
 }

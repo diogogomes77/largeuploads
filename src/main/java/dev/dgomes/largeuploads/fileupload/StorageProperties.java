@@ -4,7 +4,7 @@ package dev.dgomes.largeuploads.fileupload;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("fileupload")
+@ConfigurationProperties(prefix = "upload")
 public class StorageProperties {
 
 	/**
@@ -15,10 +15,6 @@ public class StorageProperties {
 
 	public String getLocation() {
 		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
 	}
 
 }
