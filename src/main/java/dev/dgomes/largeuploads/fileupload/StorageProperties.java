@@ -1,6 +1,7 @@
 package dev.dgomes.largeuploads.fileupload;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("fileupload")
@@ -9,7 +10,8 @@ public class StorageProperties {
 	/**
 	 * Folder location for storing files
 	 */
-	private String location = "/media/dgomes/Cenas/uploads_test";
+	@Value("${upload.location}")
+	private String location;
 
 	public String getLocation() {
 		return location;

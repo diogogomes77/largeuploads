@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties({
-		//FileStorageProperties.class,
 		StorageProperties.class
 })
 public class LargeuploadsApplication {

@@ -48,17 +48,6 @@ public class FileUploadController {
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
-    /*
-    @PostMapping("/")
-    public String handleFileUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) {
-
-        storageService.store(file);
-        redirectAttributes.addFlashAttribute("message",
-                "You successfully uploaded " + file.getOriginalFilename() + "!");
-
-        return "redirect:/";
-    }*/
 
     @PostMapping("/")
     public String handleFileUpload(final HttpServletRequest request, RedirectAttributes redirectAttributes) {
@@ -106,25 +95,6 @@ public class FileUploadController {
         redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + name + "!");
 
         return "redirect:/";
-    }
-
-    private InputStream getInputStream(final HttpServletRequest request) throws IOException, FileUploadException {
-        final ServletFileUpload upload = new ServletFileUpload();
-        final FileItemIterator iterator = upload.getItemIterator(request);
-
-        InputStream is = null;
-
-        while (iterator.hasNext()) {
-            final FileItemStream item = iterator.next();
-
-            if (!item.isFormField()) {
-                is = item.openStream();
-
-                break;
-            }
-        }
-
-        return is;
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)

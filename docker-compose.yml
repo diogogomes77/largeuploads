@@ -1,0 +1,22 @@
+version: "3.3"
+
+services:
+
+  maven_dependencies:
+    image: dgomes_largeuploads:0.1
+    build:
+      context: ./
+      dockerfile: ./dockerfiles/maven_dependencies/DockerFile
+
+  spring_run:
+    build:
+      context: ./
+      dockerfile: ./dockerfiles/spring_run/DockerFile
+    command: java -jar dgomes_app.jar
+    env_file:
+      - ./environment/dev.env
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./upload_folder:/upload_folder
