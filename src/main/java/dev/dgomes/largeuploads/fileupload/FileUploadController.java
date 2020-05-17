@@ -64,7 +64,9 @@ public class FileUploadController {
     }
 
     @PostMapping("/")
-    public String handleFileUpload(final HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    public String handleFileUpload(
+            final HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
 
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
 
